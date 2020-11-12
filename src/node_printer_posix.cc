@@ -528,3 +528,9 @@ MY_NODE_MODULE_CALLBACK(PrintFile)
         MY_NODE_MODULE_RETURN_VALUE(V8_VALUE_NEW(Number, job_id));
     }
 }
+
+MY_NODE_MODULE_CALLBACK(getPrinterCaps)
+{
+    MY_NODE_MODULE_HANDLESCOPE;
+    RETURN_EXCEPTION_STR("Not yet implemented on Posix");
+}

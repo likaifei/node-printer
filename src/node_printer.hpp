@@ -84,6 +84,10 @@ MY_NODE_MODULE_CALLBACK(getSupportedPrintFormats);
  */
 MY_NODE_MODULE_CALLBACK(getSupportedJobCommands);
 
+/** Get Device Caps with printer name
+  */
+MY_NODE_MODULE_CALLBACK(getPrinterCaps);
+
 //TODO:
 // optional ability to get printer spool
 

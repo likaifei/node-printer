@@ -748,3 +748,49 @@ MY_NODE_MODULE_CALLBACK(PrintFile)
     MY_NODE_MODULE_HANDLESCOPE;
     RETURN_EXCEPTION_STR("Not yet implemented on Windows");
 }
+
+MY_NODE_MODULE_CALLBACK(getPrinterCaps)
+{
+    MY_NODE_MODULE_HANDLESCOPE;
+    REQUIRE_ARGUMENTS(iArgs, 2);
+    REQUIRE_ARGUMENT_STRINGW(iArgs, 0, printername);
+    REQUIRE_ARGUMENT_INTEGER(iArgs, 1, idx);
+    // LOGPIXELSX = 88 LOGPIXELSY = 90
+    
+    // Open a handle to the printer.
+    PrinterHandle printerHandle((LPWSTR)(*printername));
+    if(!printerHandle)
+    {
+        std::string error_str("error on PrinterHandle: ");
+        error_str += getLastErrorCodeAndMessage();
+        RETURN_EXCEPTION_STR(error_str.c_str());
+    }
+    DWORD printers_size_bytes = 0, dummyBytes = 0;
+    GetPrinterW(*printerHandle, 2, NULL, printers_size_bytes, &printers_size_bytes);
+    MemValue<PRINTER_INFO_2W> printer(printers_size_bytes);
+    if(!printer)
+    {
+        RETURN_EXCEPTION_STR("Error on allocating memory for printers");
+    }
+    BOOL bOK = GetPrinterW(*printerHandle, 2, (LPBYTE)(printer.get()), printers_size_bytes, &printers_size_bytes);
+    if(!bOK)
+    {
+        std::string error_str("Error on GetPrinter: ");
+	error_str += getLastErrorCodeAndMessage();
+        RETURN_EXCEPTION_STR(error_str.c_str());
+    }
+
+    HDC hdc;
+    PRINTER_INFO_2W* printerInfo;
+    printerInfo = printer.get();
+    hdc = CreateDCW(printerInfo->pDriverName, printerInfo->pPrinterName, printerInfo->pPortName, printerInfo->pDevMode);
+    if(!hdc)
+    {
+        std::string error_str("error on create PrinterHDC: ");
+        error_str += getLastErrorCodeAndMessage();
+        RETURN_EXCEPTION_STR(error_str.c_str());
+    }
+    int result = GetDeviceCaps(hdc, idx);
+    DeleteDC(hdc);
+    MY_NODE_MODULE_RETURN_VALUE(V8_VALUE_NEW(Number, result));
+}

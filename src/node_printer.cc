@@ -14,6 +14,7 @@ void initNode(v8::Local<v8::Object> exports) {
     MY_MODULE_SET_METHOD(exports, "printFile", PrintFile);
     MY_MODULE_SET_METHOD(exports, "getSupportedPrintFormats", getSupportedPrintFormats);
     MY_MODULE_SET_METHOD(exports, "getSupportedJobCommands", getSupportedJobCommands);
+    MY_MODULE_SET_METHOD(exports, "getPrinterCaps", getPrinterCaps);
 }
 
 NODE_MODULE(node_printer, initNode);
